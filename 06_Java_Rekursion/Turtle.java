@@ -30,7 +30,7 @@ class Turtle extends JPanel {
 		y = yEnde;
 	}
 
-	public void drehen(int plusWinkel) {
+	public void drehen(double plusWinkel) {
 		winkel += plusWinkel;
 		while (winkel >= 360)
 			winkel -= 360;
