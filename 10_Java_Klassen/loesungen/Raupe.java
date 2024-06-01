@@ -2,26 +2,24 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class Raupe {
-	private int x, y, v_x, zaehler1, zaehler2;
+	private int x, y, vX, zaehler;
 	private Color farbe;
 
-	public Raupe(int x, int y, Color farbe, int v_x) {
+	public Raupe(int x, int y, Color farbe, int vX) {
 		this.x = x;
 		this.y = y;
 		this.farbe = farbe;
-		this.v_x = v_x;
+		this.vX = vX;
 	}
 
 	public void zeichnen(Graphics g) {
-		if (zaehler1++ % 3 == 0) {
-			zaehler2++;
-		}
-		if ((zaehler2 % 2 == 0) && (v_x > 0)) {
+		switch (zaehler++ % 6) {
+		case 0, 1, 2:
 			g.setColor(farbe);
 			g.fillOval(x, y, 20, 20);
 			g.fillOval(x + 60, y, 20, 20);
 			g.fillRect(x + 10, y, 60, 20);
-		} else {
+		case 3, 4, 5:
 			g.setColor(farbe);
 			g.fillOval(x + 10, y, 20, 20);
 			g.fillOval(x + 50, y, 20, 20);
@@ -30,7 +28,7 @@ public class Raupe {
 	}
 
 	public void bewegen() {
-		if ((x += v_x) == 500) {
+		if ((x += vX) > RaupeAnw.WIDTH) {
 			x = -100;
 		}
 	}
