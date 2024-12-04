@@ -112,8 +112,8 @@ public class Einkaufsliste extends JFrame {
 		int index = -1;
 		int start = 0;
 
-		// 1. Den kleinsten Wert aus der Liste suchen und als String speichern
 		for (int i = 0; i < einkaeufe.size(); i++) {
+			// 1. Den kleinsten Wert aus der Liste suchen und als String speichern
 			for (int j = start; j < einkaeufe.size(); j++) {
 				eintrag = einkaeufe.elementAt(i);
 				zahl = Integer.parseInt(eintrag);
