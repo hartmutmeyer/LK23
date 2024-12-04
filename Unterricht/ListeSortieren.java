@@ -11,15 +11,17 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
+import java.util.Random;
 import java.awt.event.ActionEvent;
 import javax.swing.ListSelectionModel;
+import javax.swing.JScrollPane;
 
-public class Einkaufsliste extends JFrame {
+public class ListeSortieren extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField tfNeuerEintrag;
-	private DefaultListModel<String> einkaeufe = new DefaultListModel<String>();
-	private JList<String> listEinkaufe = new JList<String>(einkaeufe);
+	private JTextField tfNeuerWert;
+	private DefaultListModel<String> werte = new DefaultListModel<String>();
+	private JList<String> listWerte = new JList<String>(werte);
 	private JButton btnClear;
 
 	/**
@@ -29,7 +31,7 @@ public class Einkaufsliste extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Einkaufsliste frame = new Einkaufsliste();
+					ListeSortieren frame = new ListeSortieren();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -41,12 +43,12 @@ public class Einkaufsliste extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Einkaufsliste() {
+	public ListeSortieren() {
 		createGUI();
-		einkaeufe.addElement("123");
-		einkaeufe.addElement("aber");
-		String nachricht = einkaeufe.elementAt(1).toUpperCase();
-		JOptionPane.showMessageDialog(this, nachricht);
+		Random zufall = new Random();
+		for (int i = 0; i < 20; i++) {
+			werte.addElement("" + zufall.nextInt(1000));
+		}
 	}
 
 	private void createGUI() {
@@ -57,10 +59,10 @@ public class Einkaufsliste extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		tfNeuerEintrag = new JTextField();
-		tfNeuerEintrag.setBounds(10, 11, 273, 20);
-		contentPane.add(tfNeuerEintrag);
-		tfNeuerEintrag.setColumns(10);
+		tfNeuerWert = new JTextField();
+		tfNeuerWert.setBounds(10, 11, 273, 20);
+		contentPane.add(tfNeuerWert);
+		tfNeuerWert.setColumns(10);
 
 		JButton btnHinzufuegen = new JButton("Hinzufügen");
 		btnHinzufuegen.addActionListener(new ActionListener() {
@@ -79,10 +81,12 @@ public class Einkaufsliste extends JFrame {
 		});
 		btnLoeschen.setBounds(293, 354, 131, 23);
 		contentPane.add(btnLoeschen);
-		listEinkaufe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		listEinkaufe.setBounds(10, 42, 414, 301);
-		contentPane.add(listEinkaufe);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 42, 414, 301);
+		contentPane.add(scrollPane);
+		scrollPane.setViewportView(listWerte);
+		listWerte.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		btnClear = new JButton("Alles Löschen");
 		btnClear.addActionListener(new ActionListener() {
@@ -105,18 +109,20 @@ public class Einkaufsliste extends JFrame {
 
 	protected void sortieren() {
 		// In einer Schleife
-		// und dann zur nächsten Position
+		// und dann zur nächsten Position (Variable start)
 		String eintrag = "";
 		int zahl;
-		int kleinsterWert = 999999999;
+		int kleinsterWert;
 		int index = -1;
 		int start = 0;
 
-		for (int i = 0; i < einkaeufe.size(); i++) {
+		for (int j = 0; j < werte.size(); j++) {
 			// 1. Den kleinsten Wert aus der Liste suchen und als String speichern
-			for (int j = start; j < einkaeufe.size(); j++) {
-				eintrag = einkaeufe.elementAt(i);
+			kleinsterWert = Integer.MAX_VALUE;
+			for (int i = start; i < werte.size(); i++) {
+				eintrag = werte.elementAt(i);
 				zahl = Integer.parseInt(eintrag);
+				System.out.println("j = " + j + ", i = " + i + ", zahl = " + zahl + ", kleinsterWert = " + kleinsterWert);
 				if (zahl < kleinsterWert) {
 					kleinsterWert = zahl;
 					index = i;
@@ -124,29 +130,40 @@ public class Einkaufsliste extends JFrame {
 			}
 			System.out.println(kleinsterWert + " an Position " + index);
 			// 2. Das entsprechende Element aus dem Datenmodell löschen
-			einkaeufe.remove(index);
+			werte.remove(index);
 			// 3. das Element an Position 0 in das Datenmodell einfügen
-			einkaeufe.add(0, "" + kleinsterWert);
+			werte.add(start, "" + kleinsterWert);
 			start++;
 		}
 
 	}
 
 	protected void eintragLoeschen() {
-		if (!listEinkaufe.isSelectionEmpty()) {
-			int zuLoeschenderEintrag = listEinkaufe.getSelectedIndex();
-			einkaeufe.remove(zuLoeschenderEintrag);
+		if (!listWerte.isSelectionEmpty()) {
+			int zuLoeschenderEintrag = listWerte.getSelectedIndex();
+			werte.remove(zuLoeschenderEintrag);
 		} else {
 			System.out.println("Du hast nichts ausgewählt");
 		}
 	}
 
 	protected void allesLoeschen() {
-		einkaeufe.clear();
+		werte.clear();
 	}
 
 	protected void hinzufuegen() {
-		String neuerEintrag = tfNeuerEintrag.getText();
-		einkaeufe.addElement(neuerEintrag);
+		String neuerEintrag = tfNeuerWert.getText();
+		boolean isInteger = true;
+		for (int i = 0; i < neuerEintrag.length(); i++) {
+			if (!Character.isDigit(neuerEintrag.charAt(i))) {
+				isInteger = false;
+			}
+		}
+		if (isInteger) {
+			werte.addElement(neuerEintrag);
+		} else {
+			JOptionPane.showMessageDialog(this, "Nur ganze Zahlen als Eingabe erlaubt");
+		}
+		tfNeuerWert.setText("");
 	}
 }
