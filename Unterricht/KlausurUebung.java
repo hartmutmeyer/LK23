@@ -57,8 +57,7 @@ public class KlausurUebung extends JFrame {
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		
-				setContentPane(contentPane);
+		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JButton btnDateiLesen = new JButton("Datei Lesen");
@@ -82,13 +81,13 @@ public class KlausurUebung extends JFrame {
 		contentPane.add(tfAusgabe);
 		tfAusgabe.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("Eingabe:");
-		lblNewLabel.setBounds(89, 154, 69, 14);
-		contentPane.add(lblNewLabel);
+		JLabel lblEingabe = new JLabel("Eingabe:");
+		lblEingabe.setBounds(89, 154, 69, 14);
+		contentPane.add(lblEingabe);
 		
-		JLabel lblNewLabel_1 = new JLabel("Ausgabe:");
-		lblNewLabel_1.setBounds(89, 185, 69, 14);
-		contentPane.add(lblNewLabel_1);
+		JLabel lblAusgabe = new JLabel("Ausgabe:");
+		lblAusgabe.setBounds(89, 185, 69, 14);
+		contentPane.add(lblAusgabe);
 	}
 
 	protected void lesenUndRechnen() {
