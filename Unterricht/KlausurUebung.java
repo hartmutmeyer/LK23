@@ -123,8 +123,5 @@ public class KlausurUebung extends JFrame {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		// Gelesenen String in Zahl umwandeln
-		 
-		// Zahl verdoppeln und als Ergebnis anzeigen/abspeichern
 	}
 }
