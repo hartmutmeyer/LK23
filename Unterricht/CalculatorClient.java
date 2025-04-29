@@ -124,6 +124,7 @@ public class CalculatorClient extends JFrame {
 		try {
 			out.write("!$");
 			out.flush();
+			tfEingabe.setText("");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -134,6 +135,7 @@ public class CalculatorClient extends JFrame {
 		try {
 			out.write("-" + tfEingabe.getText() + "$");
 			out.flush();
+			tfEingabe.setText("");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
