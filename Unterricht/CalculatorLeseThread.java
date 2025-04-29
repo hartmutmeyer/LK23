@@ -1,8 +1,7 @@
-package tmpQ1;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class CalculatorLeseThread extends Thread {
@@ -41,11 +40,21 @@ public class CalculatorLeseThread extends Thread {
 	}
 
 	private void fehlermeldung() {
-		
+		System.out.println("jetzt soll eine Fehlermeldung angezeigt werden");
+		JOptionPane.showMessageDialog(null, "Falsche Eingabe - nur ganze Zahlen sind möglich!");
 	}
 
-	private void ergebnisAnzeigen() {		
-		
+	private void ergebnisAnzeigen() throws IOException {		
+		System.out.println("jetzt soll das Ergebnis angezeigt werden");
+		int zeichen;
+		char c;
+		String ergebnis = "";
+		while ((zeichen = in.read()) != '$') {
+			c = (char) zeichen;
+			ergebnis += c;
+		}
+		System.out.println("Ergebnis gelesen: " + ergebnis);
+		tfAusgabe.setText(ergebnis);
 	}
 
 }
