@@ -1,0 +1,164 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import java.awt.GridLayout;
+import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class FahrzeugeHinzufuegen extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField textFieldKFZKennzeichen;
+	private JTextField textFieldTyp;
+	private JTextField textFieldFarbe;
+	private JTextField textFieldBaujahr;
+	private Connection conn;
+	private Statement stmt;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					FahrzeugeHinzufuegen frame = new FahrzeugeHinzufuegen();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public FahrzeugeHinzufuegen() {
+		createGUI();
+		datenbankOeffnen();
+	}
+
+	private void createGUI() {
+		setTitle("Fahrzeuge Hinzufügen");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 295, 202);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 5));
+		setContentPane(contentPane);
+
+		JPanel panel = new JPanel();
+		panel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
+		contentPane.add(panel, BorderLayout.CENTER);
+		panel.setLayout(new GridLayout(0, 2, 10, 5));
+
+		JLabel lblKFZKennzeichen = new JLabel("KFZ-Kennzeichen:");
+		lblKFZKennzeichen.setHorizontalAlignment(SwingConstants.RIGHT);
+		panel.add(lblKFZKennzeichen);
+
+		textFieldKFZKennzeichen = new JTextField();
+		lblKFZKennzeichen.setLabelFor(textFieldKFZKennzeichen);
+		panel.add(textFieldKFZKennzeichen);
+		textFieldKFZKennzeichen.setColumns(10);
+
+		JLabel lblTyp = new JLabel("Typ:");
+		lblTyp.setHorizontalAlignment(SwingConstants.RIGHT);
+		panel.add(lblTyp);
+
+		textFieldTyp = new JTextField();
+		lblTyp.setLabelFor(textFieldTyp);
+		textFieldTyp.setText("");
+		panel.add(textFieldTyp);
+		textFieldTyp.setColumns(10);
+
+		JLabel lblFarbe = new JLabel("Farbe:");
+		lblFarbe.setHorizontalAlignment(SwingConstants.RIGHT);
+		panel.add(lblFarbe);
+
+		textFieldFarbe = new JTextField();
+		lblFarbe.setLabelFor(textFieldFarbe);
+		textFieldFarbe.setText("");
+		panel.add(textFieldFarbe);
+		textFieldFarbe.setColumns(10);
+
+		JLabel lblBaujahr = new JLabel("Baujahr:");
+		lblBaujahr.setHorizontalAlignment(SwingConstants.RIGHT);
+		panel.add(lblBaujahr);
+
+		textFieldBaujahr = new JTextField();
+		lblBaujahr.setLabelFor(textFieldBaujahr);
+		textFieldBaujahr.setText("");
+		panel.add(textFieldBaujahr);
+		textFieldBaujahr.setColumns(10);
+
+		JButton btnFahrzeugHinzufgen = new JButton("Fahrzeug hinzufügen");
+		btnFahrzeugHinzufgen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				datenbankFahrzeugHinzufuegen();
+			}
+		});
+		contentPane.add(btnFahrzeugHinzufgen, BorderLayout.SOUTH);		
+	}
+
+	private void datenbankOeffnen() {
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/fahrzeuge?serverTimezone=UTC&useSSL=false", "root", "root");
+			stmt = conn.createStatement();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public void datenbankFahrzeugHinzufuegen() {
+		int ergebnis;
+		String sql;
+		ResultSet rs;
+
+		sql = "SELECT kfz_zeichen FROM fahrzeughalter WHERE kfz_zeichen = '"
+				+ textFieldKFZKennzeichen.getText()
+				+ "' AND abgemeldet IS NULL";
+		System.out.println(sql);
+		try {
+			rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				JOptionPane.showMessageDialog(this, "Es gibt bereits ein angemeldetes Fahrzeug mit diesem KFZ-Zeichen!");
+			} else {
+				sql = "INSERT INTO fahrzeug VALUES ('"
+						+ textFieldKFZKennzeichen.getText() + "','"
+						+ textFieldTyp.getText() + "','" + textFieldFarbe.getText()
+						+ "'," + textFieldBaujahr.getText() + ")";
+				System.out.println(sql);
+				ergebnis = stmt.executeUpdate(sql);
+				if (ergebnis == 1) {
+					JOptionPane.showMessageDialog(this, "Das Fahrzeug mit dem KFZ-Zeichen "
+									+ textFieldKFZKennzeichen.getText()
+									+ " wurde hinzugefügt.");
+				} else {
+					System.out.println("Fehler beim Hinzufügen des Fahrzeugs!");
+				}
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+}
