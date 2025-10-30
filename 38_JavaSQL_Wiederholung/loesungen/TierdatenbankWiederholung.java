@@ -9,53 +9,54 @@ import java.sql.*;
 public class TierdatenbankWiederholung extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField_BesitzerNr;
-	private JTextField textField_Vorname;
-	private JTextField textField_Nachname;
-	private List listTiere;
+	private JTextField tfBesitzerID;
+	private JTextField tfVorname;
+	private JTextField tfNachname;
+	private DefaultListModel<String> tiere = new DefaultListModel<String>();
+	private JList<String> listTiere = new JList<String>(tiere);
 
 	public TierdatenbankWiederholung() {
 		createGUI();
 	}
 
-	protected void actionPerformed_Laden() {
-		datenbankLaden();
+	protected void besitzerLaden() {
+		dbBesitzerLaden();
 	}
 
-	protected void actionPerformed_Loeschen() {
-		datenbankLoeschen();
+	protected void besitzerLoeschen() {
+		dbBesitzerLoeschen();
 	}
 
-	private void datenbankLaden() {
+	private void dbBesitzerLaden() {
 		ResultSet rs = null;
 		String cmdSQL;
-		String besitzerID = textField_BesitzerNr.getText();
+		String besitzerID = tfBesitzerID.getText();
 
-		cmdSQL = "SELECT vorname,nachname,name,tierart FROM tier,besitzer,beziehung WHERE besitzer_id=";
+		cmdSQL = "SELECT vorname, nachname, name, tierart FROM tier, besitzer, beziehung WHERE besitzer_id = ";
 		cmdSQL = cmdSQL + besitzerID;
-		cmdSQL = cmdSQL + " AND beziehung.beziehung_tier_id = tier.tier_id";
-		cmdSQL = cmdSQL + " AND beziehung.beziehung_besitzer_id = besitzer.besitzer_id";
+		cmdSQL = cmdSQL + " AND beziehung_tier_id = tier_id";
+		cmdSQL = cmdSQL + " AND beziehung_besitzer_id = besitzer_id";
 		cmdSQL = cmdSQL + " AND lebendig='ja'";
 
 		System.out.println(cmdSQL);
 
 		try (
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/haustier?serverTimezone=UTC&useSSL=false", "root", "root");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/haustier?serverTimezone=UTC", "root", "root");
 			Statement stmt = conn.createStatement()
 		) {
 			rs = stmt.executeQuery(cmdSQL);
 			if (rs.isBeforeFirst()) {
-				listTiere.removeAll();
+				tiere.clear();
 				while (rs.next()) {
-					listTiere.add(rs.getString("name") + " ("
+					tiere.addElement(rs.getString("name") + " ("
 							+ rs.getString("tierart") + ")");
-					textField_Vorname.setText(rs.getString("vorname"));
-					textField_Nachname.setText(rs.getString("nachname"));
+					tfVorname.setText(rs.getString("vorname"));
+					tfNachname.setText(rs.getString("nachname"));
 				}
 			} else {
-				listTiere.removeAll();
-				textField_Vorname.setText("");
-				textField_Nachname.setText("");
+				tiere.clear();
+				tfVorname.setText("");
+				tfNachname.setText("");
 				System.out.println("Einen Besitzer mit dieser ID gibt es nicht!");
 			}
 		} catch (SQLException e) {
@@ -63,26 +64,26 @@ public class TierdatenbankWiederholung extends JFrame {
 		}
 	}
 
-	private void datenbankLoeschen() {
+	private void dbBesitzerLoeschen() {
 		int ergebnis = 0;
-		String cmdSQL;
-		String besitzerID = textField_BesitzerNr.getText();
+		String sql;
+		String besitzerID = tfBesitzerID.getText();
 
-		cmdSQL = "DELETE FROM besitzer WHERE besitzer_id=" + besitzerID;
+		sql = "DELETE FROM besitzer WHERE besitzer_id = " + besitzerID;
 
-		System.out.println(cmdSQL);
+		System.out.println(sql);
 
 		try (
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/haustier?serverTimezone=UTC&useSSL=false", "root", "root");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/haustier?serverTimezone=UTC", "root", "root");
 			Statement stmt = conn.createStatement()
 		) {
-			ergebnis = stmt.executeUpdate(cmdSQL);
+			ergebnis = stmt.executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		listTiere.removeAll();
-		textField_Vorname.setText("");
-		textField_Nachname.setText("");
+		tiere.clear();
+		tfVorname.setText("");
+		tfNachname.setText("");
 		if (ergebnis == 1) {
 			System.out.println("Der Besitzer mit der ID " + besitzerID + " wurde gelöscht.");
 		} else {
@@ -104,42 +105,41 @@ public class TierdatenbankWiederholung extends JFrame {
 		lblBesitzerNr.setBounds(12, 12, 69, 15);
 		contentPane.add(lblBesitzerNr);
 
-		textField_BesitzerNr = new JTextField();
-		lblBesitzerNr.setLabelFor(textField_BesitzerNr);
-		textField_BesitzerNr.setBounds(84, 10, 47, 19);
-		contentPane.add(textField_BesitzerNr);
-		textField_BesitzerNr.setColumns(10);
+		tfBesitzerID = new JTextField();
+		lblBesitzerNr.setLabelFor(tfBesitzerID);
+		tfBesitzerID.setBounds(84, 10, 47, 19);
+		contentPane.add(tfBesitzerID);
+		tfBesitzerID.setColumns(10);
 
 		JLabel lblVorname = new JLabel("Vorname:");
 		lblVorname.setFont(new Font("Dialog", Font.PLAIN, 12));
 		lblVorname.setBounds(12, 52, 61, 15);
 		contentPane.add(lblVorname);
 
-		textField_Vorname = new JTextField();
-		textField_Vorname.setEditable(false);
-		lblVorname.setLabelFor(textField_Vorname);
-		textField_Vorname.setBounds(84, 50, 114, 19);
-		contentPane.add(textField_Vorname);
-		textField_Vorname.setColumns(10);
+		tfVorname = new JTextField();
+		tfVorname.setEditable(false);
+		lblVorname.setLabelFor(tfVorname);
+		tfVorname.setBounds(84, 50, 114, 19);
+		contentPane.add(tfVorname);
+		tfVorname.setColumns(10);
 
 		JLabel lblNachname = new JLabel("Nachname:");
 		lblNachname.setFont(new Font("Dialog", Font.PLAIN, 12));
 		lblNachname.setBounds(224, 52, 69, 15);
 		contentPane.add(lblNachname);
 
-		textField_Nachname = new JTextField();
-		textField_Nachname.setEditable(false);
-		lblNachname.setLabelFor(textField_Nachname);
-		textField_Nachname.setBounds(300, 50, 134, 19);
-		contentPane.add(textField_Nachname);
-		textField_Nachname.setColumns(10);
+		tfNachname = new JTextField();
+		tfNachname.setEditable(false);
+		lblNachname.setLabelFor(tfNachname);
+		tfNachname.setBounds(300, 50, 134, 19);
+		contentPane.add(tfNachname);
+		tfNachname.setColumns(10);
 
 		JLabel lblTiere = new JLabel("Tiere:");
 		lblTiere.setFont(new Font("Dialog", Font.PLAIN, 12));
 		lblTiere.setBounds(12, 100, 55, 15);
 		contentPane.add(lblTiere);
 
-		listTiere = new List();
 		listTiere.setBounds(12, 121, 422, 142);
 		contentPane.add(listTiere);
 
@@ -147,7 +147,7 @@ public class TierdatenbankWiederholung extends JFrame {
 		btnLaden.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				actionPerformed_Laden();
+				besitzerLaden();
 			}
 		});
 		btnLaden.setFont(new Font("Dialog", Font.PLAIN, 12));
@@ -158,7 +158,7 @@ public class TierdatenbankWiederholung extends JFrame {
 		btnLoeschen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				actionPerformed_Loeschen();
+				besitzerLoeschen();
 			}
 		});
 		btnLoeschen.setFont(new Font("Dialog", Font.PLAIN, 12));
