@@ -43,8 +43,8 @@ public class Tierdatenbank2elegant extends JFrame {
 
 	private void datenbankAbfrage() {
 		try {
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/haustier?serverTimezone=UTC", "root",
-					"root");
+			Connection conn = DriverManager.getConnection(
+					"jdbc:mysql://localhost/haustier?serverTimezone=UTC", "root", "root");
 			// Das Statement Objekt mit zusätzlichen (optionalen) Parametern
 			// erzeugen, damit im ResultSetau auch rückwärts gesucht werden kann
 			// mit rs.previous() 
